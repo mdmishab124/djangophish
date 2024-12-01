@@ -1,12 +1,18 @@
 {
-    "builds": [{
-        "src": "webcam_capture/wsgi.py",
-        "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
-    }],
+    "builds": [
+        {
+            "src": "webcam_capture/wsgi.py",
+            "use": "@vercel/python",
+            "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
+        }
+    ],
     "routes": [
         {
-            "src": "/capture/static/(.*)",
+            "src": "/static/(.*)",
+            "dest": "/static/$1"
+        },
+        {
+            "src": "/(.*)",
             "dest": "webcam_capture/wsgi.py"
         }
     ]
