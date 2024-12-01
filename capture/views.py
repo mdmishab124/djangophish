@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 
-DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1312470375044747314/xG45mckbTMhzJ18MYjpywENs29_mIMNwZdBJSoObDRgEfPYalErv-8e-JY4Qdk2ocpRR'  # Replace with your webhook URL
+DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1312712494082691134/dyrjnue9Vx9vSw9wQi8ujveS-pgLNYKh5lnH0ZveHeFQ1jPVta7PzPFoGO5olroECOUk'  # Replace with your webhook URL
 
 @csrf_exempt
 def upload_image(request):
